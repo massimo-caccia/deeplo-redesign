@@ -108,100 +108,16 @@ if (photoDialog && typeof photoDialog.showModal === 'function') {
   photoDialog.addEventListener('close', () => opener?.focus());
 }
 
-// All eleven countries stay visible; selection reveals the source universities.
-const network = document.querySelector('.hero-network');
-if (network) {
-  const countryButtons = [...network.querySelectorAll('[data-select-country]')];
-  const world = network.querySelector('.network-world');
-  const reset = network.querySelector('.network-reset');
-  const selectCountry = (code) => {
-    countryButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.selectCountry === code)));
-    world.querySelectorAll('[data-country]').forEach((shape) => shape.classList.toggle('is-selected', shape.dataset.country === code));
-    network.querySelectorAll('[data-panel-country]').forEach((panel) => { panel.hidden = panel.dataset.panelCountry !== code; });
-    network.querySelector('.network-intro').hidden = Boolean(code);
-    world.classList.toggle('has-selection', Boolean(code));
-    reset.hidden = !code;
-  };
-  countryButtons.forEach((button) => button.addEventListener('click', () => selectCountry(button.dataset.selectCountry)));
-  world.addEventListener('click', (event) => {
-    const country = event.target.closest('[data-country]');
-    if (country) selectCountry(country.dataset.country);
+// Keep keyboard-focused logos in view without stopping the continuous belt.
+const belt = document.querySelector('.partner-belt');
+if (belt) {
+  belt.addEventListener('focusin', (event) => {
+    const item = event.target.closest('#partner-track .partner-slide');
+    const animation = belt.getAnimations()[0];
+    if (!item || !animation) return;
+    const track = document.querySelector('#partner-track');
+    const distance = item.getBoundingClientRect().left - track.getBoundingClientRect().left;
+    const duration = animation.effect.getTiming().duration;
+    animation.currentTime = distance / track.getBoundingClientRect().width * duration;
   });
-  reset.addEventListener('click', () => {
-    const selected = countryButtons.find((button) => button.getAttribute('aria-pressed') === 'true');
-    selectCountry(null);
-    selected?.focus();
-  });
-}
-
-// One accessible list, with native touch scrolling and optional automatic pages.
-const partners = document.querySelector('#partenaires');
-if (partners) {
-  const viewport = partners.querySelector('.partner-viewport');
-  const track = partners.querySelector('.partner-track');
-  const slides = [...track.children];
-  const status = partners.querySelector('.carousel-status');
-  const play = partners.querySelector('.carousel-play');
-  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-  let paused = reducedMotion.matches;
-  let hovering = false;
-  let focused = false;
-  let visible = false;
-  let timer;
-  const step = () => slides[0].getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap);
-  const count = () => Math.max(1, Math.round(viewport.clientWidth / step()));
-  const first = () => Math.max(0, Math.min(slides.length - count(), Math.round(viewport.scrollLeft / step())));
-  const updateStatus = () => {
-    const start = first();
-    status.textContent = `${start + 1}–${Math.min(start + count(), slides.length)} / ${slides.length}`;
-  };
-  const updatePlay = () => {
-    play.textContent = paused ? play.dataset.pausedText : play.dataset.playingText;
-    play.setAttribute('aria-label', paused ? play.dataset.playLabel : play.dataset.pauseLabel);
-  };
-  const schedule = () => {
-    clearTimeout(timer);
-    if (!paused && !hovering && !focused && visible && !document.hidden) {
-      timer = setTimeout(() => { move(1, false); schedule(); }, 5500);
-    }
-  };
-  const move = (direction, manual = true) => {
-    const current = first();
-    const last = Math.max(0, slides.length - count());
-    const wrapping = direction > 0 ? current >= last : current <= 0;
-    const target = direction > 0 ? (current >= last ? 0 : Math.min(last, current + count()))
-      : (current <= 0 ? last : Math.max(0, current - count()));
-    if (manual) {
-      paused = true;
-      updatePlay();
-      status.setAttribute('aria-live', 'polite');
-    } else status.setAttribute('aria-live', 'off');
-    viewport.scrollTo({left: target * step(), behavior: wrapping || reducedMotion.matches ? 'auto' : 'smooth'});
-    schedule();
-  };
-  partners.querySelector('.carousel-controls').hidden = false;
-  partners.querySelector('.carousel-previous').addEventListener('click', () => move(-1));
-  partners.querySelector('.carousel-next').addEventListener('click', () => move(1));
-  play.addEventListener('click', () => { paused = !paused; updatePlay(); schedule(); });
-  viewport.addEventListener('scroll', updateStatus, {passive: true});
-  viewport.addEventListener('keydown', (event) => {
-    if (event.target === viewport && ['ArrowRight', 'ArrowLeft'].includes(event.key)) {
-      event.preventDefault();
-      move(event.key === 'ArrowRight' ? 1 : -1);
-    }
-  });
-  viewport.addEventListener('pointerdown', () => { paused = true; updatePlay(); schedule(); });
-  partners.addEventListener('pointerenter', () => { hovering = true; schedule(); });
-  partners.addEventListener('pointerleave', () => { hovering = false; schedule(); });
-  partners.addEventListener('focusin', () => { focused = true; schedule(); });
-  partners.addEventListener('focusout', () => setTimeout(() => {
-    focused = partners.contains(document.activeElement);
-    schedule();
-  }, 0));
-  reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) paused = true; updatePlay(); schedule(); });
-  document.addEventListener('visibilitychange', schedule);
-  new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; schedule(); }, {threshold: .25}).observe(partners);
-  new ResizeObserver(updateStatus).observe(viewport);
-  updateStatus();
-  updatePlay();
 }

@@ -182,3 +182,26 @@ html{scroll-padding-top:185px}
 @media(max-width:550px){.header-inner{padding-inline:20px;min-height:122px}.brand img{width:230px}.menu-toggle{padding-inline:8px}.hero-network{margin-top:35px}.network-heading{align-items:flex-start;flex-direction:column;gap:6px}.network-world{margin-block:17px 12px}.country-selectors{gap:4px 3px}.country-select{font-size:11px;padding:8px 3px;min-height:38px;gap:5px}.network-heading h2{font-size:17px}.network-heading>span{font-size:10px}.network-selection{min-height:82px;font-size:12px}.country-panel span{font-size:12px}.partners-heading{align-items:flex-start;flex-direction:column;gap:15px;margin-bottom:20px}.partners-heading .eyebrow{font-size:8px}.partners-description{font-size:12px}.carousel-controls button{height:42px;min-width:44px}.carousel-controls .carousel-play{min-width:85px;font-size:12px}.partner-track{gap:18px}.partner-slide{flex-basis:calc((100% - 18px)/2)}.partner-slide>a,.partner-slide>div{padding-inline:9px}.partner-art{height:75px}.partner-art img{max-height:62px}.partner-name{font-size:10px}.partner-wordmark{font-size:21px}.footer-top .brand img{width:300px;max-width:100%}.footer-top>.brand{width:100%}}
 @media(prefers-reduced-motion:reduce){.partner-viewport{scroll-behavior:auto}}
 @media(max-width:550px){.header-inner{gap:14px}.site-header .brand img{max-width:calc(100vw - 132px)}}
+/* A draggable globe and an uninterrupted logo ribbon. */
+.globe-stage{position:relative;width:100%;aspect-ratio:600/530;max-width:600px;margin:0 auto}
+.globe-fallback{width:100%;height:auto;display:block;stroke:none}
+.globe-canvas{display:block;width:100%;height:100%;position:absolute;inset:0;cursor:grab;touch-action:none;border-radius:50%}
+.globe-canvas.has-country{cursor:pointer}
+.globe-canvas.is-dragging{cursor:grabbing}
+.globe-canvas:focus-visible{outline:2px solid #007e70;outline-offset:-20px}
+.globe-tooltip{position:absolute;z-index:2;pointer-events:none;background:var(--paper);border:1px solid #a7c7b9;padding:5px 10px;font-size:12px;line-height:1.5;color:#164147;box-shadow:0 3px 14px #173d2c12}
+.globe-hint{font-size:10px;line-height:1.5;color:#536d64;text-align:center;margin:-5px 0 18px;letter-spacing:.03em}
+.hero-network .network-heading{border-bottom:0;padding-bottom:0}
+.hero-network .network-selection{min-height:70px}
+.partner-viewport{overflow:hidden;scroll-snap-type:none;scrollbar-width:none;padding-block:6px 15px;mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent)}
+.partner-belt{display:flex;width:max-content;animation:partner-flow 150s linear infinite;will-change:transform}
+.partner-track{flex:0 0 auto;width:max-content;gap:24px;padding:0 24px 0 0;align-items:stretch}
+.partner-slide{flex:0 0 215px;width:215px;scroll-snap-align:none}
+.partner-slide>a,.partner-slide>div{padding-inline:16px}
+@keyframes partner-flow{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+@media(max-width:1100px){.partner-slide{flex-basis:190px;width:190px}.partner-belt{animation-duration:140s}.globe-hint{font-size:9px}}
+@media(max-width:800px){.globe-stage{max-width:500px}.globe-hint{font-size:10px}.partner-slide{flex-basis:185px;width:185px}.hero-network .network-heading{flex-direction:row}}
+@media(max-width:550px){.partner-slide{flex-basis:160px;width:160px}.partner-track{gap:18px;padding-right:18px}.partner-belt{animation-duration:130s}.globe-hint{font-size:9px;margin-bottom:13px}.hero-network .network-heading{flex-direction:column}.globe-canvas:focus-visible{outline-offset:-10px}.partner-viewport{mask-image:linear-gradient(to right,transparent,#000 2%,#000 98%,transparent)}}
+@media(prefers-reduced-motion:reduce){.partner-viewport{overflow-x:auto;mask-image:none}.partner-copy{display:none}.partner-belt{animation:none;transform:none}}
+@media(min-width:801px){.hero{align-items:start}.hero-copy{padding-top:20px}.globe-stage{max-width:500px}.country-selectors{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.country-select{font-size:11px;gap:5px;padding-inline:3px}}
+@media(min-width:801px) and (max-width:1100px){.country-selectors{grid-template-columns:repeat(3,minmax(0,1fr))}.globe-stage{max-width:430px}}
